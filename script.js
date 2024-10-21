@@ -1,3 +1,5 @@
+import * as THREE from './node_modules/three/build/three.module.js';
+
 // Инициализация сцены
 const scene = new THREE.Scene();
 
@@ -18,7 +20,8 @@ camera.position.z = 450;
 // Рендерер
 const renderer = new THREE.WebGLRenderer({
     antialias: true,
-    alpha: false
+    alpha: false,
+    depth: true 
 });
 renderer.setClearColor(0x000000, 1);
 renderer.setSize(window.innerWidth, window.innerHeight);
@@ -35,7 +38,7 @@ const marsTexture = textureLoader.load('img/mars.jpg');
 const jupiterTexture = textureLoader.load('img/jupiter.jpg');
 const saturnTexture = textureLoader.load('img/saturn.jpg');
 const neptuneTexture = textureLoader.load('img/neptune.jpg');
-// const moonTexture = textureLoader.load('img/moon.jpg');
+
 
 // Создание Солнца с текстурой
 const sunGeometry = new THREE.SphereGeometry(24 * 3, 32, 32); // Увеличили размер Солнца в 3 раза
@@ -56,7 +59,7 @@ const planetInfo = {
     moon: 'Луна - единственный естественный спутник Земли. Она оказывает значительное влияние на приливы и отливы на Земле и является ближайшим космическим телом к нам.'
 };
 
-// Создаем Луну отдельно
+// Создание Луны
 const moonGeometry = new THREE.SphereGeometry(1.5 * 6, 32, 32); // Размер Луны
 const moonMaterial = new THREE.MeshStandardMaterial({ map: moonTexture });
 const moon = new THREE.Mesh(moonGeometry, moonMaterial);
@@ -64,81 +67,128 @@ moon.userData = { distance: 30, speed: 0.05 / 3, angle: 0, info: planetInfo.moon
 scene.add(moon);
 
 
-// Создаем геометрию колец Сатурна
-const innerRadius = 2.9 * 6;  // Внутренний радиус кольца (чуть больше радиуса планеты)
-const outerRadius = 4 * 6;    // Внешний радиус кольца
+// Создание колец Сатурна
+const innerRadius = 3 * 6;  // Внутренний радиус кольца (чуть больше радиуса планеты)
+const outerRadius = 5 * 6;    // Внешний радиус кольца
 const ringGeometry = new THREE.RingGeometry(innerRadius, outerRadius, 64);
 
-// Опционально: Загружаем текстуру для колец, если есть
+// Текстура колец
 const ringTexture = new THREE.TextureLoader().load('img/saturn_ring.jpg');
 
 // Материал для колец
 const ringMaterial = new THREE.MeshBasicMaterial({
-  map: ringTexture,  // Если у вас есть текстура колец
+  map: ringTexture, 
   side: THREE.DoubleSide, // Кольца видны с обеих сторон
-  
+  transparent: true,
 });
 
-// Создаем меш для колец
+// Создание меш для колец
 const saturnRings = new THREE.Mesh(ringGeometry, ringMaterial);
 
-// Устанавливаем кольца по оси xz, чтобы они лежали на "экваторе" планеты
+// Установка колец по оси xz, чтобы они лежали на "экваторе" планеты
 saturnRings.rotation.x = Math.PI / 2; // Поворот кольца на 90 градусов
 
-
-
-// Создаем Сатурн отдельно
+// Создание Сатурна
 const saturn = createPlanet('saturn', 1.8 * 6, saturnTexture, 315, 0.008 / 3, planetInfo.saturn);
 
-// Добавляем кольца к Сатурну
+// Добавление колец к Сатурну
 saturn.add(saturnRings)
-
-// Добавляем Сатурн с кольцами в сцену
 scene.add(saturn);
 
 
-
-
-
-// Функция для создания планеты с текстурой и информацией
+// Создание планеты с текстурой и информацией
 function createPlanet(name, size, texture, distance, speed, info) {
-    const planetGeometry = new THREE.SphereGeometry(size * 3, 32, 32); // Увеличили размер планет в 3 раза
+    const planetGeometry = new THREE.SphereGeometry(size * 3, 32, 32); // Увеличение размера планет в 3 раза
     const planetMaterial = new THREE.MeshStandardMaterial({ 
         map: texture,
-        roughness: 0.8,  // Делает поверхность менее блестящей
-        metalness: 0.1   // Добавляет небольшой эффект металлического блеска
+        roughness: 0.8,
+        metalness: 0.1,  
+        transparent: false,
+        depthWrite: true, // Перезапись буфера глубины
+        depthTest: true,
      });
     const planet = new THREE.Mesh(planetGeometry, planetMaterial);
-    planet.userData = { distance: distance, speed: speed / 3, angle: Math.random() * Math.PI * 2, info: info }; // Уменьшаем скорость в 3 раза
+    planet.userData = { distance: distance, speed: speed / 3, angle: Math.random() * Math.PI * 2, info: info }; // Уменьшение скорости в 3 раза
     planets.push(planet);
+    planet.renderOrder = 1;
     scene.add(planet);
     return planet;
 }
-
-
 
 // Создание планет с текстурами, физическими параметрами и информацией
 createPlanet('mercury', 6, mercuryTexture, 90, 0.04/3, planetInfo.mercury); // Меркурий
 createPlanet('venus', 1.1*6, venusTexture, 135, 0.03/3, planetInfo.venus); // Венера
 createPlanet('earth', 1.3*6, earthTexture, 180, 0.02/3, planetInfo.earth); // Земля
 createPlanet('mars', 1.5*6, marsTexture, 225, 0.015/3, planetInfo.mars); // Марс
-createPlanet('jupiter', 1.7*6, jupiterTexture, 270, 0.012/3, planetInfo.jupiter);
-createPlanet('neptune', 2*6, neptuneTexture, 360, 0.006/3, planetInfo.neptune);
+createPlanet('jupiter', 1.7*6, jupiterTexture, 270, 0.012/3, planetInfo.jupiter); // Юпитер 
+createPlanet('neptune', 2*6, neptuneTexture, 360, 0.006/3, planetInfo.neptune); // Нептун
+
+// Создание звёзд
+const starCount = 10000;
+const stars = [];
+
+function createStar() {
+    const geometry = new THREE.SphereGeometry(0.4, 24, 24);
+    const material = new THREE.MeshBasicMaterial({ 
+        color: 0xffffff, 
+        transparent: true,   
+        depthWrite: false,
+    });
+    material.onBeforeCompile = (shader) => {
+        shader.uniforms.time = { value: 0 };
+        shader.fragmentShader = `
+        uniform float time;
+        ${shader.fragmentShader}
+        `.replace(
+            `void main() {`,
+            `
+            void main() {
+                gl_FragColor = vec4(gl_FragColor.rgb, abs(sin(time)));
+            `
+        );
+            material.userData.shader = shader;
+        };
+    
+    const star = new THREE.Mesh(geometry, material);
+
+    // Случайное позиционирование звезды
+    const [x, y, z] = Array(3).fill().map(() => THREE.MathUtils.randFloatSpread(1000));
+    star.position.set(x, y, z);
+
+    // Добавление звезды в массив для последующего мерцания
+    stars.push({
+        mesh: star,
+        opacityDirection: 2.5, // направление мерцания (увеличение/уменьшение прозрачности)
+        speed: Math.random() * 0.02 + 0.01, // случайная скорость мерцания
+        maxOpacity: Math.random() * 0.8 + 0.5, // случайная максимальная яркость
+    });
+    star.renderOrder = 0;
+    scene.add(star);
+}
+
+for (let i = 0; i < starCount; i++) {
+    createStar();
+}
 
 
 // Освещение
-const pointLight = new THREE.PointLight(0xffffff, 1, 1000);
+const pointLight = new THREE.PointLight(0xffffff, 2, 1000);
 pointLight.position.set(0, 0, 0);
 scene.add(pointLight);
 
 // Добавляем окружающий свет
-const ambientLight = new THREE.AmbientLight(0xffffff, 0.3); // Мягкий свет с интенсивностью 0.3
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.4); // Мягкий свет с интенсивностью 0.3
 scene.add(ambientLight);
 
 // Второй источник света
 const pointLight2 = new THREE.PointLight(0xffffff, 0.5, 500); // Более слабый свет
 pointLight2.position.set(-200, 200, 300); // Светит с другой стороны
 scene.add(pointLight2);
+
+// Еще один источник света
+const hemisphereLight = new THREE.HemisphereLight(0xffffbb, 0x080820, 1);
+scene.add(hemisphereLight);
+
 
 // Raycaster для отслеживания наведения на планеты
 const raycaster = new THREE.Raycaster();
@@ -149,8 +199,27 @@ const infoBox = document.getElementById('info');
 function animate() {
     requestAnimationFrame(animate);
 
+     // Обновление времени для мерцания звёзд
+    stars.forEach((starData) => {
+        if (starData.mesh.material.userData.shader) {
+            starData.mesh.material.userData.shader.uniforms.time.value += 0.02;
+        }
+        const { mesh, opacityDirection, speed, maxOpacity } = starData;
+        mesh.material.opacity += speed * opacityDirection;
+        if (mesh.material.opacity >= maxOpacity || mesh.material.opacity <= 0) {
+            starData.opacityDirection *= -1;
+        }
+    });
+
+
+
+    //Сначала рендерим звезды
+    stars.forEach((star) => {
+        star.mesh.renderOrder = 0;
+    });
+
     // Вращение Солнца
-    sun.rotation.y += 0.002 / 3; // Уменьшаем скорость вращения в 3 раза
+    sun.rotation.y += 0.002 / 3; // Уменьшение скорости вращения в 3 раза
 
     // Вращение планет вокруг Солнца и вокруг своей оси
     planets.forEach(planet => {
@@ -161,6 +230,11 @@ function animate() {
         planet.userData.angle += planet.userData.speed;
         planet.position.x = planet.userData.distance * Math.cos(planet.userData.angle);
         planet.position.z = planet.userData.distance * Math.sin(planet.userData.angle);
+    });
+
+    // Рендеринг планет
+    planets.forEach((planet) => {
+        planet.renderOrder = 1; // Планеты рендерятся после звезд
     });
 
     // Вращение Луны вокруг Земли

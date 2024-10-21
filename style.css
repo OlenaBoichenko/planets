@@ -1,7 +1,6 @@
 body {
     margin: 0;
     overflow: hidden;
-    background-image: url('/img/stars.jpg');
 }
 canvas {
     display: block;
