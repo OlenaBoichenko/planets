@@ -1,0 +1,23 @@
+body {
+    margin: 0;
+    overflow: hidden;
+}
+canvas {
+    display: block;
+}
+
+#info { 
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    background-color: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 10px;
+    border-radius: 5px;
+    font-family: Arial, sans-serif;
+    display: none; /* Скрываем информацию по умолчанию */
+    max-width: 200px; /* Ограничиваем максимальную ширину */
+    word-wrap: break-word; /* Переносим длинные слова */
+    white-space: normal; /* Разрешаем перенос текста на новые строки */
+    line-height: 1.4; /* Улучшаем читаемость */
+}
