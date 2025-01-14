@@ -15,9 +15,9 @@ canvas {
     padding: 10px;
     border-radius: 5px;
     font-family: Arial, sans-serif;
-    display: none; /* Скрываем информацию по умолчанию */
-    max-width: 200px; /* Ограничиваем максимальную ширину */
-    word-wrap: break-word; /* Переносим длинные слова */
-    white-space: normal; /* Разрешаем перенос текста на новые строки */
-    line-height: 1.4; /* Улучшаем читаемость */
+    display: none; 
+    max-width: 200px;
+    word-wrap: break-word; 
+    white-space: normal; 
+    line-height: 1.4; 
 }

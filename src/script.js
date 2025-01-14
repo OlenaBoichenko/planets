@@ -50,84 +50,85 @@ scene.add(sun);
 // Array for storing planets and information about them
 const planets = [];
 const planetInfo = {
+    sun: 'The Sun is one of the stars in our galaxy and the only star in the Solar System. Other objects of this system revolve around the Sun: planets and their satellites, asteroids, meteoroids, comets and cosmic dust.',
     mercury: 'Mercury is the closest planet to the Sun. This is a small and hot planet.',
     venus: 'Venus is the second planet from the Sun. It is known for its thick clouds.',
-    earth: 'The Earth is our home. The only planet known to harbor life.',
-    mars: 'Марс - Красная планета, возможное место для будущих колоний.',
-    jupiter: 'Юпитер - самая большая планета Солнечной системы. Это газовый гигант с мощными штормами, самым известным из которых является Большое красное пятно.',
-    saturn: 'Сатурн - вторая по величине планета в Солнечной системе, известная своими красивыми кольцами, состоящими из льда и камней.',
-    neptune: 'Нептун - восьмая планета от Солнца, известная своими сильными ветрами и красивым голубым цветом. Это самая дальняя планета в Солнечной системе.',
-    moon: 'Луна - единственный естественный спутник Земли. Она оказывает значительное влияние на приливы и отливы на Земле и является ближайшим космическим телом к нам.',
-    saturnRings: 'Кольца Сатурна состоят из частиц льда, камней и пыли, и простираются на тысячи километров. Эти кольца видны даже с помощью небольшого телескопа.'
+    earth: 'The Earth is our home. The only planet known to life.',
+    mars: 'Mars is the Red Planet, a possible location for future colonies.',
+    jupiter: 'Jupiter is the largest planet in the solar system. It is a gas giant with powerful storms, the most famous of which is the Great Red Spot.',
+    saturn: 'Saturn is the second largest planet in the solar system, known for its beautiful rings made of ice and rocks.',
+    neptune: 'Neptune is the eighth planet from the Sun and is known for its strong winds and beautiful blue color. It is the most distant planet in the solar system.',
+    moon: 'The Moon is the only natural satellite of the Earth. It has a significant influence on the tides on Earth and is the closest cosmic body to us.',
+    saturnRings: `Saturn's rings are made up of particles of ice, rock and dust, and extend for thousands of kilometers. These rings are visible even with a small telescope.`
 };
 
-// Создание Луны
-const moonGeometry = new THREE.SphereGeometry(1.5*3, 32, 32); // Размер Луны
+// Creation of the Moon
+const moonGeometry = new THREE.SphereGeometry(1.5*3, 32, 32); // Moon size
 const moonMaterial = new THREE.MeshStandardMaterial({ map: moonTexture });
 const moon = new THREE.Mesh(moonGeometry, moonMaterial);
 moon.userData = { distance: 30, speed: 0.05 / 3, angle: 0, info: planetInfo.moon }; // Параметры орбиты Луны
 scene.add(moon);
 
 
-// Создание колец Сатурна
-const innerRadius = 3 * 6;  // Внутренний радиус кольца 
-const outerRadius = 5 * 6;    // Внешний радиус кольца
+// Creation of Saturn's rings
+const innerRadius = 3 * 6;  // Inner radius of the ring 
+const outerRadius = 5 * 6;    // Outer radius of the ring
 const ringGeometry = new THREE.RingGeometry(innerRadius, outerRadius, 64);
 
-// Текстура колец
+// Ring texture
 const ringTexture = new THREE.TextureLoader().load('img/saturn_ring.jpg');
 
-// Материал для колец
+// Ring material
 const ringMaterial = new THREE.MeshBasicMaterial({
   map: ringTexture, 
   side: THREE.DoubleSide, // Кольца видны с обеих сторон
   transparent: true,
 });
 
-// Создание меш для колец
+// Creating Mesh for the Rings
 const saturnRings = new THREE.Mesh(ringGeometry, ringMaterial);
 saturnRings.userData = {info: planetInfo.saturnRings}
 
-// Установка колец по оси xz, чтобы они лежали на "экваторе" планеты
+// Installing the rings along the xz axis so that they lie on the “equator” of the planet
 saturnRings.rotation.x = Math.PI / 2; // Поворот кольца на 90 градусов
 
-// Создание Сатурна
+// Creation of Saturn
 const saturn = createPlanet('saturn', 1.8*2.5, saturnTexture, 280, 0.008 / 3, planetInfo.saturn);
 saturn.castShadow = true;
 
-// Добавление колец к Сатурну
+// Adding rings to Saturn
 saturn.add(saturnRings)
 scene.add(saturn);
 
 
-// Создание планеты с текстурой и информацией
+// Creating a planet with texture and information
 function createPlanet(name, size, texture, distance, speed, info) {
-    const planetGeometry = new THREE.SphereGeometry(size*2.5, 35, 35); // Увеличение размера планет в 3 раза
+    const planetGeometry = new THREE.SphereGeometry(size*2.5, 35, 35); // Increase in the size of planets by 3 times
     const planetMaterial = new THREE.MeshStandardMaterial({ 
         map: texture,
         roughness: 0.8,
         metalness: 0.1,  
         transparent: false,
-        depthWrite: true, // Перезапись буфера глубины
+        depthWrite: true, 
         depthTest: true,
      });
     const planet = new THREE.Mesh(planetGeometry, planetMaterial);
-    planet.userData = { distance: distance, speed: speed / 3, angle: Math.random() * Math.PI * 2, info: info }; // Уменьшение скорости в 3 раза
+    planet.userData = { distance: distance, speed: speed / 3, angle: Math.random() * Math.PI * 2, info: info }; // Reduce speed by 3 times
     planets.push(planet);
     planet.renderOrder = 1;
     scene.add(planet);
     return planet;
 }
 
-// Создание планет с текстурами, физическими параметрами и информацией
-createPlanet('mercury', 6, mercuryTexture, 80, 0.04/3, planetInfo.mercury); // Меркурий
-createPlanet('venus', 1.1*6, venusTexture, 120, 0.03/3, planetInfo.venus); // Венера
-createPlanet('earth', 1.3*6, earthTexture, 160, 0.02/3, planetInfo.earth); // Земля
-createPlanet('mars', 1.5*6, marsTexture, 200, 0.015/3, planetInfo.mars); // Марс
-createPlanet('jupiter', 1.7*6, jupiterTexture, 240, 0.012/3, planetInfo.jupiter); // Юпитер 
-createPlanet('neptune', 2*6, neptuneTexture, 320, 0.006/3, planetInfo.neptune); // Нептун
+// Creating planets with textures, physics and information
+createPlanet('mercury', 6, mercuryTexture, 80, 0.04/3, planetInfo.mercury); 
+createPlanet('venus', 1.1*6, venusTexture, 120, 0.03/3, planetInfo.venus); 
+createPlanet('earth', 1.3*6, earthTexture, 160, 0.02/3, planetInfo.earth); 
+createPlanet('mars', 1.5*6, marsTexture, 200, 0.015/3, planetInfo.mars);
+createPlanet('jupiter', 1.7*6, jupiterTexture, 240, 0.012/3, planetInfo.jupiter); 
+createPlanet('neptune', 2*6, neptuneTexture, 320, 0.006/3, planetInfo.neptune); 
 
-// Создание звёзд
+// Create stars
 const starCount = 10000;
 const stars = [];
 
@@ -155,16 +156,16 @@ function createStar() {
     
     const star = new THREE.Mesh(geometry, material);
 
-    // Случайное позиционирование звезды
+    // Random star positioning
     const [x, y, z] = Array(3).fill().map(() => THREE.MathUtils.randFloatSpread(1000));
     star.position.set(x, y, z);
 
-    // Добавление звезды в массив для последующего мерцания
+    // Adding a star to an array for subsequent twinkling
     stars.push({
         mesh: star,
-        opacityDirection: 2.5, // направление мерцания (увеличение/уменьшение прозрачности)
-        speed: Math.random() * 0.02 + 0.01, // случайная скорость мерцания
-        maxOpacity: Math.random() * 0.8 + 0.5, // случайная максимальная яркость
+        opacityDirection: 2.5, // Flicker direction (increase/decrease transparency)
+        speed: Math.random() * 0.02 + 0.01, // random flicker speed
+        maxOpacity: Math.random() * 0.8 + 0.5, // random maximum brightness
     });
     star.renderOrder = 0;
     scene.add(star);
