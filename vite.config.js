@@ -1,7 +1,6 @@
 import { defineConfig } from 'vite';
 
-export default defineConfig({
-  base: '/Planets/', 
+export default defineConfig({ 
   build: {
     outDir: 'dist', 
   },
