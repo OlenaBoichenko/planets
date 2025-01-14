@@ -41,12 +41,6 @@ const saturnTexture = textureLoader.load('img/saturn.jpg');
 const neptuneTexture = textureLoader.load('img/neptune.jpg');
 
 
-// Creating a Sun with Texture
-const sunGeometry = new THREE.SphereGeometry(24*2, 32, 32); // Увеличили размер Солнца в 3 раза
-const sunMaterial = new THREE.MeshBasicMaterial({ map: sunTexture });
-const sun = new THREE.Mesh(sunGeometry, sunMaterial);
-scene.add(sun);
-
 // Array for storing planets and information about them
 const planets = [];
 const planetInfo = {
@@ -61,6 +55,13 @@ const planetInfo = {
     moon: 'The Moon is the only natural satellite of the Earth. It has a significant influence on the tides on Earth and is the closest cosmic body to us.',
     saturnRings: `Saturn's rings are made up of particles of ice, rock and dust, and extend for thousands of kilometers. These rings are visible even with a small telescope.`
 };
+
+// Creating a Sun with Texture
+const sunGeometry = new THREE.SphereGeometry(24*2, 32, 32); // Увеличили размер Солнца в 3 раза
+const sunMaterial = new THREE.MeshBasicMaterial({ map: sunTexture });
+const sun = new THREE.Mesh(sunGeometry, sunMaterial);
+sun.userData = { info: planetInfo.sun};
+scene.add(sun);
 
 // Creation of the Moon
 const moonGeometry = new THREE.SphereGeometry(1.5*3, 32, 32); // Moon size
@@ -181,7 +182,7 @@ const pointLight = new THREE.PointLight(0xffffff, 2, 1000);
 pointLight.position.set(0, 0, 0);
 scene.add(pointLight);
 
-// Добавляем окружающий свет
+// Добавление окружающего света
 const ambientLight = new THREE.AmbientLight(0xffffff, 0.4); // Мягкий свет с интенсивностью 0.3
 scene.add(ambientLight);
 
@@ -205,16 +206,16 @@ function animate() {
     requestAnimationFrame(animate);
 
      // Обновление времени для мерцания звёзд
-    // stars.forEach((starData) => {
-    //     if (starData.mesh.material.userData.shader) {
-    //         starData.mesh.material.userData.shader.uniforms.time.value += 0.02;
-    //     }
-    //     const { mesh, opacityDirection, speed, maxOpacity } = starData;
-    //     mesh.material.opacity += speed * opacityDirection;
-    //     if (mesh.material.opacity >= maxOpacity || mesh.material.opacity <= 0) {
-    //         starData.opacityDirection *= -1;
-    //     }
-    // });
+    stars.forEach((starData) => {
+        if (starData.mesh.material.userData.shader) {
+            starData.mesh.material.userData.shader.uniforms.time.value += 0.02;
+        }
+        const { mesh, opacityDirection, speed, maxOpacity } = starData;
+        mesh.material.opacity += speed * opacityDirection;
+        if (mesh.material.opacity >= maxOpacity || mesh.material.opacity <= 0) {
+            starData.opacityDirection *= -1;
+        }
+    });
 
 
 
