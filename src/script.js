@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/Addons.js';
 
-// Рендерер
+// Render
 const renderer = new THREE.WebGLRenderer({
     antialias: true,
     alpha: false,
@@ -11,10 +11,10 @@ renderer.setClearColor(0x000000, 1);
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
-// Инициализация сцены
+// Scene initialization
 const scene = new THREE.Scene();
 
-// Настройка камеры
+// Camera setup
 const camera = new THREE.PerspectiveCamera(
     45,
     window.innerWidth / window.innerHeight,
@@ -28,7 +28,7 @@ camera.position.set(-450, 100, 100);
 orbit.update();
 
 
-// Загрузка текстур
+// Loading textures
 const textureLoader = new THREE.TextureLoader();
 const sunTexture = textureLoader.load('img/sun.jpg');
 const mercuryTexture = textureLoader.load('img/mercury.jpg');
@@ -41,18 +41,18 @@ const saturnTexture = textureLoader.load('img/saturn.jpg');
 const neptuneTexture = textureLoader.load('img/neptune.jpg');
 
 
-// Создание Солнца с текстурой
+// Creating a Sun with Texture
 const sunGeometry = new THREE.SphereGeometry(24*2, 32, 32); // Увеличили размер Солнца в 3 раза
 const sunMaterial = new THREE.MeshBasicMaterial({ map: sunTexture });
 const sun = new THREE.Mesh(sunGeometry, sunMaterial);
 scene.add(sun);
 
-// Массив для хранения планет и информации о них
+// Array for storing planets and information about them
 const planets = [];
 const planetInfo = {
-    mercury: 'Меркурий - самая близкая планета к Солнцу. Это маленькая и горячая планета.',
-    venus: 'Венера - вторая планета от Солнца. Она известна своими густыми облаками.',
-    earth: 'Земля - наш дом. Единственная планета, известная наличием жизни.',
+    mercury: 'Mercury is the closest planet to the Sun. This is a small and hot planet.',
+    venus: 'Venus is the second planet from the Sun. It is known for its thick clouds.',
+    earth: 'The Earth is our home. The only planet known to harbor life.',
     mars: 'Марс - Красная планета, возможное место для будущих колоний.',
     jupiter: 'Юпитер - самая большая планета Солнечной системы. Это газовый гигант с мощными штормами, самым известным из которых является Большое красное пятно.',
     saturn: 'Сатурн - вторая по величине планета в Солнечной системе, известная своими красивыми кольцами, состоящими из льда и камней.',
@@ -70,7 +70,7 @@ scene.add(moon);
 
 
 // Создание колец Сатурна
-const innerRadius = 3 * 6;  // Внутренний радиус кольца (чуть больше радиуса планеты)
+const innerRadius = 3 * 6;  // Внутренний радиус кольца 
 const outerRadius = 5 * 6;    // Внешний радиус кольца
 const ringGeometry = new THREE.RingGeometry(innerRadius, outerRadius, 64);
 
@@ -204,20 +204,20 @@ function animate() {
     requestAnimationFrame(animate);
 
      // Обновление времени для мерцания звёзд
-    stars.forEach((starData) => {
-        if (starData.mesh.material.userData.shader) {
-            starData.mesh.material.userData.shader.uniforms.time.value += 0.02;
-        }
-        const { mesh, opacityDirection, speed, maxOpacity } = starData;
-        mesh.material.opacity += speed * opacityDirection;
-        if (mesh.material.opacity >= maxOpacity || mesh.material.opacity <= 0) {
-            starData.opacityDirection *= -1;
-        }
-    });
+    // stars.forEach((starData) => {
+    //     if (starData.mesh.material.userData.shader) {
+    //         starData.mesh.material.userData.shader.uniforms.time.value += 0.02;
+    //     }
+    //     const { mesh, opacityDirection, speed, maxOpacity } = starData;
+    //     mesh.material.opacity += speed * opacityDirection;
+    //     if (mesh.material.opacity >= maxOpacity || mesh.material.opacity <= 0) {
+    //         starData.opacityDirection *= -1;
+    //     }
+    // });
 
 
 
-    //Сначала рендерим звезды
+    //Рендер звезд
     stars.forEach((star) => {
         star.mesh.renderOrder = 0;
     });
